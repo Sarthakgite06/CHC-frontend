@@ -15,6 +15,9 @@ export default function MedicalHistory() {
   const [labReports, setLabReports] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewType, setPreviewType] = useState('');
+  const [previewName, setPreviewName] = useState('');
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
 
@@ -36,7 +39,7 @@ export default function MedicalHistory() {
     }
   };
 
-  const handleView = async (reportId, fileType) => {
+  const handleView = async (reportId, fileType, reportName) => {
     try {
       const response = await API.get(`/lab/downloadReport/${reportId}`, {
         responseType: 'blob',
@@ -47,7 +50,9 @@ export default function MedicalHistory() {
       }
       const blob = new Blob([response.data], { type: contentType });
       const fileUrl = window.URL.createObjectURL(blob);
-      window.open(fileUrl, '_blank');
+      setPreviewUrl(fileUrl);
+      setPreviewType(contentType);
+      setPreviewName(reportName || 'Report Preview');
     } catch (err) {
       console.error('Failed to view file:', err);
       alert('Could not view file. Please check permissions or try again.');
@@ -343,7 +348,7 @@ export default function MedicalHistory() {
                         
                         <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                           <button
-                            onClick={() => handleView(report.id, report.fileType)}
+                            onClick={() => handleView(report.id, report.fileType, report.reportName)}
                             className="btn btn-secondary"
                             style={{ flex: 1, padding: '10px', fontSize: '0.9rem', borderColor: '#ec489930', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                           >
@@ -373,6 +378,73 @@ export default function MedicalHistory() {
               </motion.div>
             )}
           </motion.div>
+
+          {/* File Preview Modal */}
+          <AnimatePresence>
+            {previewUrl && (
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }}
+                style={{
+                  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                  background: 'rgba(10, 15, 26, 0.85)', backdropFilter: 'blur(8px)',
+                  zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: '20px'
+                }}
+              >
+                <motion.div 
+                  initial={{ scale: 0.9, y: 20 }} 
+                  animate={{ scale: 1, y: 0 }} 
+                  exit={{ scale: 0.9, y: 20 }}
+                  className="glass-card"
+                  style={{
+                    width: '100%', maxWidth: '800px', background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)',
+                    display: 'flex', flexDirection: 'column', overflow: 'hidden'
+                  }}
+                >
+                  {/* Modal Header */}
+                  <div style={{
+                    padding: '16px 24px', borderBottom: '1px solid var(--border-subtle)',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    background: 'rgba(255,255,255,0.02)'
+                  }}>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                      👁️ {previewName}
+                    </h3>
+                    <button 
+                      onClick={() => {
+                        window.URL.revokeObjectURL(previewUrl);
+                        setPreviewUrl(null);
+                      }}
+                      className="btn"
+                      style={{ padding: '8px 16px', fontSize: '0.85rem', background: 'var(--bg-tertiary)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', cursor: 'pointer', borderRadius: 'var(--radius-sm)' }}
+                    >
+                      ✕ Close
+                    </button>
+                  </div>
+
+                  {/* Modal Content */}
+                  <div style={{ padding: '24px', flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', background: 'var(--bg-primary)' }}>
+                    {previewType.includes('pdf') ? (
+                      <iframe 
+                        src={previewUrl} 
+                        title="Report PDF" 
+                        style={{ width: '100%', height: '60vh', border: 'none', borderRadius: 'var(--radius-sm)' }} 
+                      />
+                    ) : (
+                      <img 
+                        src={previewUrl} 
+                        alt="Report Preview" 
+                        style={{ maxWidth: '100%', maxHeight: '60vh', objectFit: 'contain', borderRadius: 'var(--radius-sm)' }} 
+                      />
+                    )}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
     </>
   );
 }
