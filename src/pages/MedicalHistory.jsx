@@ -356,7 +356,7 @@ export default function MedicalHistory() {
                           >
                             📥 Download
                           </button>
-                          {roleName === 'Pathologist' && report.uploadedBy === user?.userName && (
+                          {roleName === 'Pathologist' && (
                             <button
                               onClick={() => handleDelete(report.id)}
                               className="btn"
