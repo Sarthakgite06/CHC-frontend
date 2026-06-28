@@ -547,28 +547,30 @@ export default function MedicalHistory() {
                                   </div>
                                 </div>
 
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                  {record.fileType !== 'DCM' ? (
+                                {isPatient && (
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    {record.fileType !== 'DCM' ? (
+                                      <button
+                                        onClick={() => handlePrescriptionView(record.fileUrl, record.fileType, record.title || `${record.imagingType} Scan`)}
+                                        className="btn btn-secondary"
+                                        style={{ padding: '6px 12px', fontSize: '0.8rem', borderColor: 'rgba(0, 230, 217, 0.3)', color: '#00e6d9' }}
+                                      >
+                                        👁️ Preview
+                                      </button>
+                                    ) : (
+                                      <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', background: 'var(--bg-tertiary)', padding: '6px 10px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
+                                        DICOM File
+                                      </span>
+                                    )}
                                     <button
-                                      onClick={() => handlePrescriptionView(record.fileUrl, record.fileType, record.title || `${record.imagingType} Scan`)}
-                                      className="btn btn-secondary"
-                                      style={{ padding: '6px 12px', fontSize: '0.8rem', borderColor: 'rgba(0, 230, 217, 0.3)', color: '#00e6d9' }}
+                                      onClick={() => handlePrescriptionDownload(record.fileUrl, `prescription_scan_${record.medicalRecordId}.${record.fileType.toLowerCase()}`)}
+                                      className="btn btn-primary"
+                                      style={{ padding: '6px 12px', fontSize: '0.8rem', color: '#0a0f1a', border: 'none', background: 'linear-gradient(135deg, #00e6d9, #8b5cf6)' }}
                                     >
-                                      👁️ Preview
+                                      📥 Download
                                     </button>
-                                  ) : (
-                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', background: 'var(--bg-tertiary)', padding: '6px 10px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
-                                      DICOM File
-                                    </span>
-                                  )}
-                                  <button
-                                    onClick={() => handlePrescriptionDownload(record.fileUrl, `prescription_scan_${record.medicalRecordId}.${record.fileType.toLowerCase()}`)}
-                                    className="btn btn-primary"
-                                    style={{ padding: '6px 12px', fontSize: '0.8rem', color: '#0a0f1a', border: 'none', background: 'linear-gradient(135deg, #00e6d9, #8b5cf6)' }}
-                                  >
-                                    📥 Download
-                                  </button>
-                                </div>
+                                  </div>
+                                )}
                               </div>
 
                               {record.description && (
@@ -858,32 +860,48 @@ export default function MedicalHistory() {
                           )}
 
                           <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '10px' }}>
-                            {record.fileType !== 'DCM' ? (
-                              <button
-                                onClick={() => handleImagingView(record.id, record.fileType, record.title)}
-                                className="btn btn-secondary"
-                                style={{ flex: 1, padding: '8px', fontSize: '0.85rem', borderColor: '#ec489930', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                              >
-                                👁️ View
-                              </button>
-                            ) : (
-                              <div style={{ flex: 1, padding: '8px', fontSize: '0.78rem', background: 'var(--bg-tertiary)', color: 'var(--text-tertiary)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                                📦 DICOM (Download only)
-                              </div>
+                            {isPatient && (
+                              <>
+                                {record.fileType !== 'DCM' ? (
+                                  <button
+                                    onClick={() => handleImagingView(record.id, record.fileType, record.title)}
+                                    className="btn btn-secondary"
+                                    style={{ flex: 1, padding: '8px', fontSize: '0.85rem', borderColor: '#ec489930', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                                  >
+                                    👁️ View
+                                  </button>
+                                ) : (
+                                  <div style={{ flex: 1, padding: '8px', fontSize: '0.78rem', background: 'var(--bg-tertiary)', color: 'var(--text-tertiary)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                    📦 DICOM (Download only)
+                                  </div>
+                                )}
+                                <button
+                                  onClick={() => handleImagingDownload(record.id, record.title + '.' + record.fileType.toLowerCase())}
+                                  className="btn btn-primary"
+                                  style={{ flex: 1, padding: '8px', fontSize: '0.85rem', background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                                >
+                                  📥 Download
+                                </button>
+                              </>
                             )}
-                            <button
-                              onClick={() => handleImagingDownload(record.id, record.title + '.' + record.fileType.toLowerCase())}
-                              className="btn btn-primary"
-                              style={{ flex: 1, padding: '8px', fontSize: '0.85rem', background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                            >
-                              📥 Download
-                            </button>
                             <button
                               onClick={() => handleImagingDelete(record.id)}
                               className="btn"
-                              style={{ padding: '8px 12px', fontSize: '0.85rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              style={{ 
+                                padding: '8px 12px', 
+                                fontSize: '0.85rem', 
+                                background: '#ef4444', 
+                                color: '#fff', 
+                                border: 'none', 
+                                borderRadius: 'var(--radius-sm)', 
+                                cursor: 'pointer', 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                flex: isPatient ? '0 0 auto' : '1'
+                              }}
                             >
-                              🗑️
+                              🗑️ {isPatient ? '' : 'Delete Record'}
                             </button>
                           </div>
                         </div>

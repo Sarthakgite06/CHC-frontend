@@ -19,13 +19,6 @@ export default function CreateRecord() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [uploadFile, setUploadFile] = useState(null);
-  const [uploadType, setUploadType] = useState('X-Ray');
-  const [uploadTitle, setUploadTitle] = useState('');
-  const [uploadHospital, setUploadHospital] = useState('');
-  const [uploadDesc, setUploadDesc] = useState('');
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
 
@@ -89,55 +82,15 @@ export default function CreateRecord() {
         }
       };
 
-      const formData = new FormData();
-      formData.append('record', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
-      if (uploadFile) {
-        if (!uploadTitle.trim()) { 
-          setError('Report Title is required when attaching a scan.'); 
-          setLoading(false); 
-          return; 
-        }
-        if (!uploadHospital.trim()) { 
-          setError('Hospital/Clinic Name is required when attaching a scan.'); 
-          setLoading(false); 
-          return; 
-        }
-
-        formData.append('file', uploadFile);
-        formData.append('imagingType', uploadType);
-        formData.append('title', uploadTitle.trim());
-        formData.append('hospitalName', uploadHospital.trim());
-        if (uploadDesc.trim()) {
-          formData.append('description', uploadDesc.trim());
-        }
-        setIsUploading(true);
-        setUploadProgress(0);
-      }
-
-      await API.post('/doctor/createMedicineRecord', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        params: { userName: selectedPatient.userName, healthCardNo: selectedPatient.healthCardNo },
-        onUploadProgress: (progressEvent) => {
-          if (uploadFile) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setUploadProgress(percentCompleted);
-          }
-        },
+      await API.post('/doctor/createMedicineRecord', payload, {
+        params: { userName: selectedPatient.userName, healthCardNo: selectedPatient.healthCardNo }
       });
 
       setSuccess(t('createRecord.success'));
-      setUploadFile(null);
-      setUploadType('X-Ray');
-      setUploadTitle('');
-      setUploadHospital('');
-      setUploadDesc('');
     } catch (err) {
       setError(err.response?.data?.msg || err.response?.data?.message || t('createRecord.failed'));
     } finally { 
       setLoading(false); 
-      setIsUploading(false); 
     }
   };
 
@@ -275,151 +228,6 @@ export default function CreateRecord() {
                     </div>
                   </motion.div>
                 ))}
-              </div>
-
-              {/* Attach Medical Scan (Optional) */}
-              <div className="glass-card" style={{ padding: '28px', marginBottom: '20px', borderLeft: '3px solid #00e6d9' }}>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px', color: '#00e6d9', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  📷 Attach Medical Scan <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)', fontWeight: 'normal' }}>(Optional)</span>
-                </h3>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-                  {/* File Selector */}
-                  <div>
-                    <label className="form-label">Select Medical Scan File</label>
-                    <div 
-                      style={{
-                        border: '2px dashed var(--border-subtle)',
-                        borderRadius: 'var(--radius-md)',
-                        padding: '24px',
-                        textAlign: 'center',
-                        background: 'rgba(255,255,255,0.01)',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.borderColor = '#00e6d9'}
-                      onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
-                      onClick={() => document.getElementById('record-file-input').click()}
-                    >
-                      <span style={{ fontSize: '2rem', display: 'block', marginBottom: '8px' }}>📤</span>
-                      {uploadFile ? (
-                        <p style={{ fontSize: '0.9rem', color: '#10b981', fontWeight: 600 }}>
-                          Selected: {uploadFile.name} ({(uploadFile.size / (1024 * 1024)).toFixed(2)} MB)
-                        </p>
-                      ) : (
-                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                          Click to select a file (PDF, JPG, JPEG, PNG, DICOM)<br />
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>Max size: 50MB</span>
-                        </p>
-                      )}
-                    </div>
-                    <input 
-                      type="file" 
-                      id="record-file-input" 
-                      style={{ display: 'none' }}
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          const allowed = ['.pdf', '.jpg', '.jpeg', '.png', '.dcm'];
-                          const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-                          if (!allowed.includes(ext)) {
-                            alert('Unsupported file format. Allowed: PDF, JPG, JPEG, PNG, DICOM (.dcm)');
-                            return;
-                          }
-                          if (file.size > 50 * 1024 * 1024) {
-                            alert('File exceeds maximum size of 50MB.');
-                            return;
-                          }
-                          setUploadFile(file);
-                        }
-                      }}
-                    />
-                  </div>
-
-                  {/* Imaging Options — Only visible when a file is selected */}
-                  {uploadFile && (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div>
-                        <label className="form-label">Imaging Type *</label>
-                        <select 
-                          className="form-input"
-                          value={uploadType} 
-                          onChange={(e) => setUploadType(e.target.value)}
-                          style={{ width: '100%', background: 'var(--bg-secondary)', padding: '10px' }}
-                        >
-                          <option value="X-Ray">🦴 X-Ray</option>
-                          <option value="MRI">🧠 MRI</option>
-                          <option value="CT Scan">🌀 CT Scan</option>
-                          <option value="Ultrasound">🔊 Ultrasound</option>
-                          <option value="ECG">🫀 ECG</option>
-                          <option value="Other">📷 Other</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="form-label">Report Title *</label>
-                        <input 
-                          className="form-input" 
-                          placeholder="e.g. Chest X-Ray, Brain MRI" 
-                          value={uploadTitle} 
-                          onChange={(e) => setUploadTitle(e.target.value)} 
-                          style={{ width: '100%' }}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="form-label">Hospital / Clinic Name *</label>
-                        <input 
-                          className="form-input" 
-                          placeholder="e.g. City General Hospital" 
-                          value={uploadHospital} 
-                          onChange={(e) => setUploadHospital(e.target.value)} 
-                          style={{ width: '100%' }}
-                        />
-                      </div>
-
-                      <div>
-                        <label className="form-label">Short Description (Optional)</label>
-                        <textarea 
-                          className="form-input" 
-                          placeholder="Add findings or short notes..." 
-                          value={uploadDesc} 
-                          onChange={(e) => setUploadDesc(e.target.value)} 
-                          rows={2} 
-                          style={{ width: '100%', resize: 'none', background: 'var(--bg-secondary)' }}
-                        />
-                      </div>
-
-                      <button 
-                        type="button" 
-                        onClick={() => { 
-                          setUploadFile(null); 
-                          setUploadType('X-Ray');
-                          setUploadTitle('');
-                          setUploadHospital('');
-                          setUploadDesc('');
-                        }}
-                        className="btn btn-secondary" 
-                        style={{ padding: '8px 16px', fontSize: '0.8rem', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', width: 'fit-content' }}
-                      >
-                        Remove Attachment
-                      </button>
-                    </motion.div>
-                  )}
-                </div>
-
-                {/* Upload Progress Bar */}
-                {isUploading && (
-                  <div style={{ marginTop: '20px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '6px' }}>
-                      <span>Uploading Scan...</span>
-                      <span>{uploadProgress}%</span>
-                    </div>
-                    <div style={{ width: '100%', height: '8px', background: 'var(--bg-tertiary)', borderRadius: '4px', overflow: 'hidden' }}>
-                      <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'linear-gradient(90deg, #00e6d9, #8b5cf6)', transition: 'width 0.1s ease-out' }}></div>
-                    </div>
-                  </div>
-                )}
               </div>
 
               <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%', padding: '18px', fontSize: '1.05rem' }}>
