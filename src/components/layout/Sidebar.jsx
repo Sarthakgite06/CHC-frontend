@@ -49,20 +49,28 @@ const roleConfig = {
   Patient:      { nav: patientNav,      color: '#00e6d9', badgeKey: 'roles.patient', badgeIcon: '🏥', icon: '💳' },
 };
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
   const roleName = user?.role?.replace('ROLE_', '') || 'User';
   const config = roleConfig[roleName] || roleConfig.User;
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">+</div>
-        <div>
-          <div className="sidebar-logo-text">CHC</div>
-          <div className="sidebar-logo-sub">{t('sidebar.healthCardSystem')}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="sidebar-logo-icon">+</div>
+          <div>
+            <div className="sidebar-logo-text">CHC</div>
+            <div className="sidebar-logo-sub">{t('sidebar.healthCardSystem')}</div>
+          </div>
         </div>
+        <button className="mobile-close-btn" onClick={onClose}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       {/* Role Badge */}

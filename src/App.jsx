@@ -12,6 +12,7 @@ import Feedback from './pages/Feedback';
 import VerifyPrescription from './pages/VerifyPrescription';
 import UploadReport from './pages/UploadReport';
 import HealthcareTest from './pages/HealthcareTest';
+import DashboardLayout from './components/layout/DashboardLayout';
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -31,15 +32,15 @@ function AppRoutes() {
       <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
 
       {/* Protected Routes */}
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/medical-history" element={<ProtectedRoute><MedicalHistory /></ProtectedRoute>} />
-      <Route path="/create-record" element={<ProtectedRoute><CreateRecord /></ProtectedRoute>} />
-      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-      <Route path="/admin-panel" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
-      <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
-      <Route path="/verify-prescription" element={<ProtectedRoute><VerifyPrescription /></ProtectedRoute>} />
-      <Route path="/upload-report" element={<ProtectedRoute><UploadReport /></ProtectedRoute>} />
-      <Route path="/health-test" element={<ProtectedRoute><HealthcareTest /></ProtectedRoute>} />
+      <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout><Dashboard /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/medical-history" element={<ProtectedRoute><DashboardLayout><MedicalHistory /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/create-record" element={<ProtectedRoute><DashboardLayout><CreateRecord /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><DashboardLayout><Profile /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/admin-panel" element={<ProtectedRoute><DashboardLayout><AdminPanel /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/feedback" element={<ProtectedRoute><DashboardLayout><Feedback /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/verify-prescription" element={<ProtectedRoute><DashboardLayout><VerifyPrescription /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/upload-report" element={<ProtectedRoute><DashboardLayout><UploadReport /></DashboardLayout></ProtectedRoute>} />
+      <Route path="/health-test" element={<ProtectedRoute><DashboardLayout><HealthcareTest /></DashboardLayout></ProtectedRoute>} />
 
       {/* Default redirect */}
       <Route path="*" element={<Navigate to="/login" replace />} />

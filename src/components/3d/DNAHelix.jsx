@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 export default function DNAHelix() {
   const groupRef = useRef();
+  const timeRef = useRef(0);
   const sphereCount = 40;
   const radius = 1.8;
   const height = 12;
@@ -51,10 +52,12 @@ export default function DNAHelix() {
     return items;
   }, []);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
+    timeRef.current += delta;
+    const time = timeRef.current;
     if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.elapsedTime * 0.15;
-      groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.3;
+      groupRef.current.rotation.y = time * 0.15;
+      groupRef.current.position.y = Math.sin(time * 0.3) * 0.3;
     }
   });
 

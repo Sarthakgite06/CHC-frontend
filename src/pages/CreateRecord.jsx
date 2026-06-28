@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import API from '../api/axios';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
 
 export default function CreateRecord() {
   const { user } = useAuth();
@@ -96,11 +94,7 @@ export default function CreateRecord() {
   };
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
-        <div className="dashboard-content">
+    <>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <div className="page-header">
               <h1>✏️ {t('createRecord.title')}</h1>
@@ -122,7 +116,7 @@ export default function CreateRecord() {
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px', color: '#8b5cf6' }}>
                   {t('createRecord.patientDoctorDetails')}
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px' }}>
+                <div className="grid-layout-2-1">
                   <div ref={searchRef} style={{ position: 'relative' }}>
                     <label className="form-label">🔍 {t('createRecord.searchPatient')}</label>
                     <input className="form-input" placeholder={t('createRecord.searchPlaceholder')}
@@ -167,7 +161,7 @@ export default function CreateRecord() {
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px', color: '#f59e0b' }}>
                   {t('createRecord.patientVitals')}
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                <div className="grid-layout-3">
                   <div className="form-group">
                     <label className="form-label">{t('createRecord.age')}</label>
                     <input className="form-input" type="number" value={patientInfo.age} onChange={e => setPatientInfo(p => ({ ...p, age: e.target.value }))} placeholder="25" required />
@@ -207,7 +201,7 @@ export default function CreateRecord() {
                         </button>
                       )}
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div className="grid-layout-2-1" style={{ marginBottom: '12px' }}>
                       <div className="form-group">
                         <label className="form-label">{t('createRecord.medicineName')}</label>
                         <input className="form-input" value={med.medicineName} onChange={e => updateMedicine(idx, 'medicineName', e.target.value)} placeholder="Paracetamol 500mg" required />
@@ -240,8 +234,6 @@ export default function CreateRecord() {
               </button>
             </form>
           </motion.div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

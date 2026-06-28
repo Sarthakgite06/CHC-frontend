@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://chc-backend-ac0i.onrender.com',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081',
   headers: {
     'Content-Type': 'application/json',
   },

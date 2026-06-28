@@ -5,8 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import HealthCard3D from '../components/3d/HealthCard3D';
 import FloatingParticles from '../components/3d/FloatingParticles';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
+
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -110,18 +109,14 @@ export default function Dashboard() {
   const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } };
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
-        <div className="dashboard-content">
-          {/* Hero Section */}
+    <>
+      {/* Hero Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+            className="grid-layout-2"
             style={{
               background: 'var(--gradient-card)', borderRadius: 'var(--radius-xl)',
-              border: `1px solid ${config.color}25`, display: 'grid',
-              gridTemplateColumns: '1fr 1fr', minHeight: '320px', overflow: 'hidden', marginBottom: '32px'
+              border: `1px solid ${config.color}25`, minHeight: '320px', overflow: 'hidden', marginBottom: '32px'
             }}
           >
             <div style={{ padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
@@ -197,7 +192,7 @@ export default function Dashboard() {
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, marginBottom: '20px' }}>
               {config.actionTitle}
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+            <div className="grid-responsive">
               {config.actions.map((action, i) => (
                 <motion.a key={i} href={action.link} whileHover={{ scale: 1.03, y: -2 }}
                   style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '20px',
@@ -210,8 +205,6 @@ export default function Dashboard() {
               ))}
             </div>
           </motion.div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

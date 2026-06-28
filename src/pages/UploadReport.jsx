@@ -3,8 +3,6 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
 
 export default function UploadReport() {
   const { user } = useAuth();
@@ -49,10 +47,9 @@ export default function UploadReport() {
         notes: form.remarks || '',
       });
 
-      // Step 2: We need the test request ID. For simplicity, we'll fetch the latest pending one.
-      // For now, upload directly with a simplified flow:
+      // Step 2: Pass the generated test request ID to report upload
       const formData = new FormData();
-      formData.append('labTestRequestId', '0'); // Will be handled by backend
+      formData.append('labTestRequestId', testRes.data.id);
       formData.append('pathologistUserName', user?.userName || 'pathologist');
       formData.append('findings', form.findings);
       formData.append('remarks', form.remarks || '');
@@ -85,11 +82,7 @@ export default function UploadReport() {
   };
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
-        <div className="dashboard-content">
+    <>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="page-header">
               <h1>🔬 {t('uploadReport.title')}</h1>
@@ -171,8 +164,6 @@ export default function UploadReport() {
               </form>
             </div>
           </motion.div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

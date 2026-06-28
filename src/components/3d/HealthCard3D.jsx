@@ -6,15 +6,18 @@ import * as THREE from 'three';
 export default function HealthCard3D({ userName = 'USER', healthCardNo = '0000', role = 'Patient' }) {
   const groupRef = useRef();
   const glowRef = useRef();
+  const timeRef = useRef(0);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
+    timeRef.current += delta;
+    const time = timeRef.current;
     if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.2;
-      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.05;
-      groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.7) * 0.15;
+      groupRef.current.rotation.y = Math.sin(time * 0.5) * 0.2;
+      groupRef.current.rotation.x = Math.sin(time * 0.3) * 0.05;
+      groupRef.current.position.y = Math.sin(time * 0.7) * 0.15;
     }
     if (glowRef.current) {
-      glowRef.current.material.emissiveIntensity = 0.3 + Math.sin(state.clock.elapsedTime * 2) * 0.15;
+      glowRef.current.material.emissiveIntensity = 0.3 + Math.sin(time * 2) * 0.15;
     }
   });
 

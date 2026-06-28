@@ -3,8 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
 
 export default function Feedback() {
   const { user } = useAuth();
@@ -57,11 +55,7 @@ export default function Feedback() {
     color: 'var(--text-primary)', fontSize: '0.95rem', outline: 'none' };
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
-        <div className="dashboard-content">
+    <>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="page-header">
               <h1>💬 Feedback & Support</h1>
@@ -124,8 +118,6 @@ export default function Feedback() {
               ))
             )}
           </motion.div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
 
 // Basic Health: 10, Disease: 5, Habit: 10
 const QUESTIONS = [
@@ -148,10 +146,7 @@ export default function HealthcareTest() {
   const q = QUESTIONS[currentIndex];
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
+    <>
         <div className="dashboard-content" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           
           <motion.div className="glass-card" style={{ padding: '40px', width: '100%', maxWidth: '600px', position: 'relative', overflow: 'hidden' }}
@@ -221,7 +216,7 @@ export default function HealthcareTest() {
                 </h2>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Your health profile has been updated successfully.</p>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+                <div className="grid-layout-2" style={{ marginBottom: '32px' }}>
                   <div style={{ padding: '20px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>Overall Status</p>
                     <p style={{ fontSize: '1.4rem', fontWeight: 800, color: '#10b981' }}>{results.overallStatus}</p>
@@ -245,7 +240,6 @@ export default function HealthcareTest() {
 
           </motion.div>
         </div>
-      </div>
-    </div>
+    </>
   );
 }

@@ -2,8 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
 
 export default function VerifyPrescription() {
   const { user } = useAuth();
@@ -54,11 +52,7 @@ export default function VerifyPrescription() {
   };
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
-        <div className="dashboard-content">
+    <>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="page-header">
               <h1>✅ Verify Prescription</h1>
@@ -140,8 +134,6 @@ export default function VerifyPrescription() {
               </motion.div>
             ))}
           </motion.div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

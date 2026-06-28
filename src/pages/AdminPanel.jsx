@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/axios';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
 
 const ROLE_COLORS = { Doctor: '#8b5cf6', Chemist: '#f59e0b', User: '#00e6d9', Patient: '#00e6d9', Admin: '#f43f5e' };
 const PIE_COLORS = ['#00e6d9', '#8b5cf6', '#f59e0b', '#f43f5e', '#10b981'];
@@ -96,11 +94,7 @@ export default function AdminPanel() {
     color: 'var(--text-primary)', fontSize: '0.95rem', outline: 'none' };
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
-        <div className="dashboard-content">
+    <>
           <div className="page-header">
             <h1>🛡️ Admin Control Panel</h1>
             <p>System-wide monitoring, user management, and analytics</p>
@@ -142,7 +136,7 @@ export default function AdminPanel() {
                   </div>
 
                   {/* Charts Row */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '24px' }}>
+                  <div className="grid-layout-2" style={{ marginTop: '24px' }}>
                     {/* Pie Chart - Role Distribution */}
                     <div className="glass-card" style={{ padding: '24px' }}>
                       <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, marginBottom: '16px' }}>📊 Role Distribution</h3>
@@ -174,7 +168,7 @@ export default function AdminPanel() {
                   {/* Feedback Stats */}
                   <div className="glass-card" style={{ padding: '24px', marginTop: '24px' }}>
                     <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, marginBottom: '16px' }}>💬 Feedback Overview</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                    <div className="grid-layout-3">
                       {[
                         { label: 'Open', value: stats?.feedbackOpen || 0, color: '#f59e0b' },
                         { label: 'In Progress', value: stats?.feedbackInProgress || 0, color: '#8b5cf6' },
@@ -350,7 +344,7 @@ export default function AdminPanel() {
                       </div>
                     )}
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                    <div className="grid-layout-2" style={{ marginBottom: '16px' }}>
                       <div>
                         <label style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>First Name</label>
                         <input style={inputStyle} value={newMember.firstName} onChange={e => setNewMember(m => ({ ...m, firstName: e.target.value }))} placeholder="First name" />
@@ -364,7 +358,7 @@ export default function AdminPanel() {
                       <label style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Username *</label>
                       <input style={inputStyle} value={newMember.userName} onChange={e => setNewMember(m => ({ ...m, userName: e.target.value }))} placeholder="team_member_username" />
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                    <div className="grid-layout-2" style={{ marginBottom: '20px' }}>
                       <div>
                         <label style={{ fontSize: '0.82rem', fontWeight: 500, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Email *</label>
                         <input style={inputStyle} type="email" value={newMember.email} onChange={e => setNewMember(m => ({ ...m, email: e.target.value }))} placeholder="member@chc.com" />
@@ -401,8 +395,6 @@ export default function AdminPanel() {
               )}
             </>
           )}
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

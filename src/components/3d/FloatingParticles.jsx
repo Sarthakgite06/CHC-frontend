@@ -4,6 +4,7 @@ import * as THREE from 'three';
 
 export default function FloatingParticles({ count = 80, color = '#00e6d9', spread = 10 }) {
   const meshRef = useRef();
+  const timeRef = useRef(0);
 
   const particles = useMemo(() => {
     const temp = [];
@@ -24,9 +25,10 @@ export default function FloatingParticles({ count = 80, color = '#00e6d9', sprea
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     if (!meshRef.current) return;
-    const time = state.clock.elapsedTime;
+    timeRef.current += delta;
+    const time = timeRef.current;
 
     particles.forEach((p, i) => {
       dummy.position.set(

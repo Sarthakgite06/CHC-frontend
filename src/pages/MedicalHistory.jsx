@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import API from '../api/axios';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
 
 export default function MedicalHistory() {
   const { user } = useAuth();
@@ -19,6 +17,42 @@ export default function MedicalHistory() {
   const [error, setError] = useState('');
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
+
+  const handleDownload = async (reportId, fileName) => {
+    try {
+      const response = await API.get(`/lab/downloadReport/${reportId}`, {
+        responseType: 'blob',
+      });
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileName || 'report.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Failed to download file:', err);
+      alert('Could not download file. Please check permissions or try again.');
+    }
+  };
+
+  const handleView = async (reportId, fileType) => {
+    try {
+      const response = await API.get(`/lab/downloadReport/${reportId}`, {
+        responseType: 'blob',
+      });
+      let contentType = response.headers['content-type'];
+      if (!contentType) {
+        contentType = fileType === 'PDF' ? 'application/pdf' : 'image/jpeg';
+      }
+      const blob = new Blob([response.data], { type: contentType });
+      const fileUrl = window.URL.createObjectURL(blob);
+      window.open(fileUrl, '_blank');
+    } catch (err) {
+      console.error('Failed to view file:', err);
+      alert('Could not view file. Please check permissions or try again.');
+    }
+  };
 
   // Real-time autocomplete
   useEffect(() => {
@@ -92,11 +126,7 @@ export default function MedicalHistory() {
   const roleColor = { Doctor: '#8b5cf6', Chemist: '#f59e0b', User: '#00e6d9', Patient: '#00e6d9', Admin: '#f43f5e' }[roleName] || '#00e6d9';
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
-        <div className="dashboard-content">
+    <>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <div className="page-header">
               <h1>{roleName === 'Doctor' ? `🔍 ${t('medicalHistory.patientRecords')}` : roleName === 'Chemist' ? `📋 ${t('medicalHistory.patientRecords')}` : `📋 ${t('medicalHistory.title')}`}</h1>
@@ -271,33 +301,51 @@ export default function MedicalHistory() {
                     {t('medicalHistory.noReports')}
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
                     {labReports.map((report) => (
-                      <div key={report.id} className="glass-card" style={{ padding: '20px', borderLeft: '3px solid #ec4899' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                      <div key={report.id} className="glass-card" style={{ padding: '20px', borderLeft: '3px solid #ec4899', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <div>
-                            <h4 style={{ fontWeight: 600, fontSize: '1rem', color: '#ec4899' }}>{report.labTestRequest?.testName}</h4>
-                            <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>By: @{report.pathologistUserName}</p>
+                            <h4 style={{ fontWeight: 700, fontSize: '1.1rem', color: '#ec4899', margin: 0 }}>{report.reportName}</h4>
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                              <strong>Test:</strong> {report.testName}
+                            </p>
                           </div>
-                          <span className="badge badge-primary">{report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'N/A'}</span>
+                          <span className="badge badge-primary">
+                            {report.uploadDateTime ? new Date(report.uploadDateTime).toLocaleString() : 'N/A'}
+                          </span>
                         </div>
-                        <p style={{ fontSize: '0.9rem', marginBottom: '12px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                        
+                        <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', background: 'var(--bg-tertiary)', padding: '10px', borderRadius: 'var(--radius-sm)' }}>
+                          <div><strong>Uploaded By:</strong> @{report.uploadedBy}</div>
+                          <div><strong>Format:</strong> {report.fileType}</div>
+                        </div>
+
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: '4px 0', lineHeight: 1.4 }}>
                           <strong>{t('common.findings')}:</strong> {report.findings}
                         </p>
                         {report.remarks && (
-                          <p style={{ fontSize: '0.85rem', marginBottom: '16px', color: 'var(--text-tertiary)' }}>
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', margin: '4px 0' }}>
                             <strong>{t('medicalHistory.remark')}:</strong> {report.remarks}
                           </p>
                         )}
-                        <a
-                          href={`http://localhost:8081/lab/downloadReport/${report.id}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="btn btn-secondary"
-                          style={{ width: '100%', padding: '10px', fontSize: '0.9rem', borderColor: '#ec489930', color: '#ec4899' }}
-                        >
-                          📥 {t('medicalHistory.downloadReport')}
-                        </a>
+                        
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                          <button
+                            onClick={() => handleView(report.id, report.fileType)}
+                            className="btn btn-secondary"
+                            style={{ flex: 1, padding: '10px', fontSize: '0.9rem', borderColor: '#ec489930', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                          >
+                            👁️ View
+                          </button>
+                          <button
+                            onClick={() => handleDownload(report.id, report.reportName)}
+                            className="btn btn-primary"
+                            style={{ flex: 1, padding: '10px', fontSize: '0.9rem', background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                          >
+                            📥 Download
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -305,8 +353,6 @@ export default function MedicalHistory() {
               </motion.div>
             )}
           </motion.div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }

@@ -102,7 +102,7 @@ export default function Signup() {
   const labelStyle = { fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '6px', display: 'block' };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+    <div className="auth-layout">
       {/* Left: 3D Scene */}
       <div className="auth-3d-panel" style={{ position: 'relative', background: 'var(--bg-primary)' }}>
         <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
@@ -118,7 +118,7 @@ export default function Signup() {
       </div>
 
       {/* Right: Form */}
-      <div style={{ display: 'flex', position: 'relative', alignItems: 'center', justifyContent: 'center', padding: '40px', background: 'var(--bg-secondary)', overflowY: 'auto' }}>
+      <div className="auth-form-panel" style={{ position: 'relative', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-secondary)', overflowY: 'auto', width: '100%' }}>
         <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 50 }}>
           <ThemeLangToggle />
         </div>
@@ -187,12 +187,12 @@ export default function Signup() {
 
               {step === 1 && (
                 <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div className="grid-layout-2">
                     <div><label style={labelStyle}>{t('signup.firstName', 'First Name *')}</label><input style={inputStyle} name="firstName" value={form.firstName} onChange={handleChange} onKeyDown={(e) => handleKeyDown(e, 'lastName')} required /></div>
                     <div><label style={labelStyle}>{t('signup.lastName', 'Last Name *')}</label><input style={inputStyle} name="lastName" value={form.lastName} onChange={handleChange} onKeyDown={(e) => handleKeyDown(e, 'email')} required /></div>
                   </div>
                   <div style={{ marginTop: '16px' }}><label style={labelStyle}>{t('signup.email', 'Email *')}</label><input style={inputStyle} name="email" type="email" value={form.email} onChange={handleChange} onKeyDown={(e) => handleKeyDown(e, 'dob')} required /></div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px' }}>
+                  <div className="grid-layout-2" style={{ marginTop: '16px' }}>
                     <div><label style={labelStyle}>{t('common.dob', 'Date of Birth')} *</label><input style={inputStyle} name="dob" type="date" value={form.dob} onChange={handleChange} onKeyDown={(e) => handleKeyDown(e, 'password')} required /></div>
                     <div><label style={labelStyle}>{t('common.gender', 'Gender')} *</label>
                       <select style={inputStyle} name="gender" value={form.gender} onChange={handleChange}>
@@ -201,7 +201,7 @@ export default function Signup() {
                     </div>
                   </div>
                   <div style={{ marginTop: '16px', opacity: 0.7, pointerEvents: 'none' }}><label style={labelStyle}>{t('login.username', 'Username')} * (Auto-generated)</label><input style={inputStyle} name="userName" value={form.userName} readOnly required /></div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px' }}>
+                  <div className="grid-layout-2" style={{ marginTop: '16px' }}>
                     <div style={{ position: 'relative' }}>
                       <label style={labelStyle}>{t('login.password', 'Password')} *</label>
                       <input style={{...inputStyle, paddingRight: '40px'}} name="password" type={showPassword ? "text" : "password"} value={form.password} onChange={handleChange} onKeyDown={(e) => handleKeyDown(e, 'confirmPassword')} required />
@@ -225,7 +225,7 @@ export default function Signup() {
 
               {step === 2 && (
                 <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div className="grid-layout-2">
                     <div><label style={labelStyle}>{t('signup.contactNo', 'Contact No. *')}</label><input style={inputStyle} name="contactNo" type="tel" value={form.contactNo} onChange={handleChange} onKeyDown={(e) => handleKeyDown(e, 'address')} required /></div>
                     <div><label style={labelStyle}>{t('profile.district', 'District')} *</label>
                       <select style={inputStyle} name="district" value={form.district} onChange={handleChange} required>
@@ -235,7 +235,7 @@ export default function Signup() {
                     </div>
                   </div>
                   <div style={{ marginTop: '16px' }}><label style={labelStyle}>{t('signup.address', 'Address *')}</label><input style={inputStyle} name="address" value={form.address} onChange={handleChange} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSubmit(e); } }} required /></div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '16px' }}>
+                  <div className="grid-layout-2" style={{ marginTop: '16px' }}>
                     {form.role === 'Patient' ? (
                       <div><label style={labelStyle}>{t('signup.bloodGroup', 'Blood Group *')}</label>
                         <select style={inputStyle} name="bloodGroup" value={form.bloodGroup} onChange={handleChange}>
@@ -270,7 +270,7 @@ export default function Signup() {
                     💳 {t('signup.healthCardInfo', 'Your Health Card ID will be auto-generated based on your district')}
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '24px' }}>
+                  <div className="grid-layout-2" style={{ marginTop: '24px' }}>
                     <button type="button" onClick={() => setStep(1)}
                       style={{ padding: '14px', borderRadius: 'var(--radius-md)', background: 'var(--bg-tertiary)',
                         border: '1px solid var(--border-subtle)', color: 'var(--text-primary)', fontWeight: 600, cursor: 'pointer' }}>

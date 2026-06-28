@@ -5,8 +5,6 @@ import { OrbitControls, Environment } from '@react-three/drei';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import HealthCard3D from '../components/3d/HealthCard3D';
-import Sidebar from '../components/layout/Sidebar';
-import Navbar from '../components/layout/Navbar';
 
 const roleFeatures = {
   Doctor: [
@@ -65,11 +63,7 @@ export default function Profile() {
   }, [roleName, user?.userName]);
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar />
-      <div className="dashboard-main">
-        <Navbar />
-        <div className="dashboard-content">
+    <>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <div className="page-header">
               <h1>👤 My Profile</h1>
@@ -78,7 +72,7 @@ export default function Profile() {
 
             {/* 3D Card Preview */}
             <div className="glass-card" style={{ marginBottom: '28px', overflow: 'hidden', borderRadius: 'var(--radius-xl)', border: `1px solid ${color}25` }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '280px' }}>
+              <div className="grid-layout-2" style={{ minHeight: '280px' }}>
                 <div style={{ padding: '36px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
                     <p style={{ color, fontWeight: 600, fontSize: '0.85rem', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
@@ -134,7 +128,7 @@ export default function Profile() {
             </div>
 
             {/* Profile Details */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            <div className="grid-layout-2">
               <motion.div className="glass-card" style={{ padding: '28px' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                 <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px', color }}>
                   Account Information
@@ -235,7 +229,7 @@ export default function Profile() {
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, marginBottom: '20px' }}>
                 {roleName === 'Doctor' ? '🩺 Doctor Capabilities' : roleName === 'Chemist' ? '💊 Chemist Capabilities' : roleName === 'Admin' ? '🛡️ Admin Capabilities' : '🏥 Your CHC Benefits'}
               </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+              <div className="grid-responsive">
                 {features.map((f, i) => (
                   <motion.div key={i} whileHover={{ scale: 1.02, y: -2 }}
                     style={{ padding: '20px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
@@ -247,8 +241,6 @@ export default function Profile() {
               </div>
             </motion.div>
           </motion.div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
