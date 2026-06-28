@@ -54,6 +54,17 @@ export default function MedicalHistory() {
     }
   };
 
+  const handleDelete = async (reportId) => {
+    if (!window.confirm('Are you sure you want to delete this lab report?')) return;
+    try {
+      await API.delete(`/lab/deleteReport/${reportId}`);
+      setLabReports(prev => prev.filter(r => r.id !== reportId));
+    } catch (err) {
+      console.error('Failed to delete file:', err);
+      alert(err.response?.data?.message || 'Could not delete lab report. Please check permissions or try again.');
+    }
+  };
+
   // Real-time autocomplete
   useEffect(() => {
     if (searchQuery.length < 2) { setSuggestions([]); return; }
@@ -345,6 +356,15 @@ export default function MedicalHistory() {
                           >
                             📥 Download
                           </button>
+                          {roleName === 'Pathologist' && report.uploadedBy === user?.userName && (
+                            <button
+                              onClick={() => handleDelete(report.id)}
+                              className="btn"
+                              style={{ padding: '10px 14px', fontSize: '0.9rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                            >
+                              🗑️ Delete
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
