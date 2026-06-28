@@ -862,50 +862,59 @@ export default function MedicalHistory() {
                           )}
 
                           <div style={{ display: 'flex', gap: '10px', marginTop: 'auto', paddingTop: '10px' }}>
-                            {/* View button for non-DICOM files */}
-                            {record.fileType !== 'DCM' ? (
-                              <button
-                                onClick={() => handleImagingView(record.id, record.fileType, record.title)}
-                                className="btn btn-secondary"
-                                style={{ flex: 1, padding: '8px', fontSize: '0.85rem', borderColor: '#ec489930', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                              >
-                                👁️ View
-                              </button>
-                            ) : (
-                              <div style={{ flex: 1, padding: '8px', fontSize: '0.78rem', background: 'var(--bg-tertiary)', color: 'var(--text-tertiary)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                                📦 DICOM (Download only)
+                            {roleName === 'Chemist' ? (
+                              /* Chemist: metadata visible but file access is restricted */
+                              <div style={{ flex: 1, padding: '8px 12px', fontSize: '0.8rem', background: 'rgba(245,158,11,0.07)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                                🔒 File viewing restricted to Patient & Doctor
                               </div>
-                            )}
-                            {/* Download button for patients and doctors */}
-                            {(isPatient || roleName === 'Doctor') && (
-                              <button
-                                onClick={() => handleImagingDownload(record.id, record.title + '.' + record.fileType.toLowerCase())}
-                                className="btn btn-primary"
-                                style={{ flex: 1, padding: '8px', fontSize: '0.85rem', background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-                              >
-                                📥 Download
-                              </button>
-                            )}
-                            {/* Delete button only for doctors */}
-                            {roleName === 'Doctor' && (
-                              <button
-                                onClick={() => handleImagingDelete(record.id)}
-                                className="btn"
-                                style={{ 
-                                  padding: '8px 12px', 
-                                  fontSize: '0.85rem', 
-                                  background: '#ef4444', 
-                                  color: '#fff', 
-                                  border: 'none', 
-                                  borderRadius: 'var(--radius-sm)', 
-                                  cursor: 'pointer', 
-                                  display: 'flex', 
-                                  alignItems: 'center', 
-                                  justifyContent: 'center'
-                                }}
-                              >
-                                🗑️ Delete Record
-                              </button>
+                            ) : (
+                              <>
+                                {/* View button for non-DICOM files */}
+                                {record.fileType !== 'DCM' ? (
+                                  <button
+                                    onClick={() => handleImagingView(record.id, record.fileType, record.title)}
+                                    className="btn btn-secondary"
+                                    style={{ flex: 1, padding: '8px', fontSize: '0.85rem', borderColor: '#ec489930', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                                  >
+                                    👁️ View
+                                  </button>
+                                ) : (
+                                  <div style={{ flex: 1, padding: '8px', fontSize: '0.78rem', background: 'var(--bg-tertiary)', color: 'var(--text-tertiary)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                    📦 DICOM (Download only)
+                                  </div>
+                                )}
+                                {/* Download button for patients and doctors */}
+                                {(isPatient || roleName === 'Doctor') && (
+                                  <button
+                                    onClick={() => handleImagingDownload(record.id, record.title + '.' + record.fileType.toLowerCase())}
+                                    className="btn btn-primary"
+                                    style={{ flex: 1, padding: '8px', fontSize: '0.85rem', background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                                  >
+                                    📥 Download
+                                  </button>
+                                )}
+                                {/* Delete button only for doctors */}
+                                {roleName === 'Doctor' && (
+                                  <button
+                                    onClick={() => handleImagingDelete(record.id)}
+                                    className="btn"
+                                    style={{ 
+                                      padding: '8px 12px', 
+                                      fontSize: '0.85rem', 
+                                      background: '#ef4444', 
+                                      color: '#fff', 
+                                      border: 'none', 
+                                      borderRadius: 'var(--radius-sm)', 
+                                      cursor: 'pointer', 
+                                      display: 'flex', 
+                                      alignItems: 'center', 
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    🗑️ Delete Record
+                                  </button>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
