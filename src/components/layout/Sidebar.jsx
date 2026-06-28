@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 const patientNav = [
   { path: '/dashboard', labelKey: 'nav.dashboard', icon: '📊' },
   { path: '/medical-history', labelKey: 'nav.medicalHistory', icon: '📋' },
+  { path: '/medical-imaging', labelKey: 'nav.medicalImaging', icon: '📷' },
   { path: '/feedback', labelKey: 'nav.feedback', icon: '💬' },
   { path: '/profile', labelKey: 'nav.profile', icon: '👤' },
 ];

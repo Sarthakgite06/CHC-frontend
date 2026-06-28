@@ -20,6 +20,7 @@ export default function Navbar({ onMenuClick }) {
     '/feedback': `💬 ${t('nav.feedback')}`,
     '/profile': `👤 ${t('nav.profile')}`,
     '/upload-report': `🔬 ${t('nav.uploadReport')}`,
+    '/medical-imaging': `📷 ${t('nav.medicalImaging')}`,
   };
 
   const title = pageTitles[location.pathname] || 'CHC';

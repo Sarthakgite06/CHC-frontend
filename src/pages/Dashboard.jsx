@@ -92,6 +92,7 @@ export default function Dashboard() {
       ],
       actions: [
         { icon: '📋', label: t('nav.medicalHistory'), desc: 'Access your complete health records', link: '/medical-history' },
+        { icon: '📷', label: 'Medical Imaging', desc: 'View, preview, and download medical imaging files', link: '/medical-imaging' },
         { icon: '👤', label: 'Complete Profile (Health Test)', desc: 'Attempt basic healthcare test to update profile status', link: '/health-test' },
         { icon: '💬', label: t('nav.feedback'), desc: 'Share your experience with CHC', link: '/feedback' },
       ],
