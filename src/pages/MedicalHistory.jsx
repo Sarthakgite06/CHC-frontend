@@ -586,8 +586,8 @@ export default function MedicalHistory() {
                   ));
                 })()}
 
-                {/* Lab Reports */}
-                {records && (
+                {/* Lab Reports — hidden for Chemist role */}
+                {records && roleName !== 'Chemist' && (
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ marginTop: '32px' }}>
                     <h3 style={{ fontWeight: 700, marginBottom: '16px', color: '#ec4899' }}>🔬 {t('medicalHistory.labReports')}</h3>
                     {labReports.length === 0 ? (
