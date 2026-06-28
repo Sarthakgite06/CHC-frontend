@@ -121,6 +121,44 @@ export default function MedicalHistory() {
     }
   };
 
+  const handlePrescriptionView = async (fileUrl, fileType, title) => {
+    try {
+      const response = await API.get(fileUrl, {
+        responseType: 'blob',
+      });
+      let contentType = response.headers['content-type'];
+      if (!contentType) {
+        contentType = fileType === 'PDF' ? 'application/pdf' : 'image/jpeg';
+      }
+      const blob = new Blob([response.data], { type: contentType });
+      const previewUrl = window.URL.createObjectURL(blob);
+      setPreviewUrl(previewUrl);
+      setPreviewType(contentType);
+      setPreviewName(title || 'Prescription Attachment Preview');
+    } catch (err) {
+      console.error('Failed to view file:', err);
+      alert('Could not view file. Please check permissions or try again.');
+    }
+  };
+
+  const handlePrescriptionDownload = async (fileUrl, fileName) => {
+    try {
+      const response = await API.get(fileUrl, {
+        responseType: 'blob',
+      });
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileName || 'download';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Failed to download file:', err);
+      alert('Could not download file. Please check permissions or try again.');
+    }
+  };
+
   const handleImagingUpload = async (e) => {
     e.preventDefault();
     if (!uploadFile) {
@@ -477,6 +515,69 @@ export default function MedicalHistory() {
                               ))}
                             </tbody>
                           </table>
+
+                          {/* Scan Attachment Section */}
+                          {record.fileUrl && (
+                            <div style={{
+                              marginTop: '16px',
+                              padding: '16px',
+                              background: 'rgba(0, 230, 217, 0.05)',
+                              border: '1px solid rgba(0, 230, 217, 0.2)',
+                              borderRadius: 'var(--radius-sm)',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '12px'
+                            }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                  <span style={{ fontSize: '1.5rem', background: 'rgba(0, 230, 217, 0.1)', padding: '8px', borderRadius: 'var(--radius-xs)', display: 'inline-flex' }}>
+                                    {record.imagingType === 'X-Ray' ? '🦴' : 
+                                     record.imagingType === 'MRI' ? '🧠' : 
+                                     record.imagingType === 'CT Scan' ? '🌀' : 
+                                     record.imagingType === 'Ultrasound' ? '🔊' : 
+                                     record.imagingType === 'ECG' ? '🫀' : '📷'}
+                                  </span>
+                                  <div>
+                                    <h4 style={{ margin: 0, fontWeight: 700, fontSize: '0.95rem', color: '#00e6d9' }}>
+                                      {record.title || `${record.imagingType} Scan`}
+                                    </h4>
+                                    <p style={{ margin: '2px 0 0 0', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                                      🏥 {record.hospitalName || 'City Clinic'} · <span style={{ color: 'var(--text-tertiary)' }}>{record.imagingType} ({record.fileType}, {(record.fileSize / (1024 * 1024)).toFixed(2)} MB)</span>
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  {record.fileType !== 'DCM' ? (
+                                    <button
+                                      onClick={() => handlePrescriptionView(record.fileUrl, record.fileType, record.title || `${record.imagingType} Scan`)}
+                                      className="btn btn-secondary"
+                                      style={{ padding: '6px 12px', fontSize: '0.8rem', borderColor: 'rgba(0, 230, 217, 0.3)', color: '#00e6d9' }}
+                                    >
+                                      👁️ Preview
+                                    </button>
+                                  ) : (
+                                    <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', background: 'var(--bg-tertiary)', padding: '6px 10px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
+                                      DICOM File
+                                    </span>
+                                  )}
+                                  <button
+                                    onClick={() => handlePrescriptionDownload(record.fileUrl, `prescription_scan_${record.medicalRecordId}.${record.fileType.toLowerCase()}`)}
+                                    className="btn btn-primary"
+                                    style={{ padding: '6px 12px', fontSize: '0.8rem', color: '#0a0f1a', border: 'none', background: 'linear-gradient(135deg, #00e6d9, #8b5cf6)' }}
+                                  >
+                                    📥 Download
+                                  </button>
+                                </div>
+                              </div>
+
+                              {record.description && (
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.02)', padding: '8px 12px', borderRadius: 'var(--radius-xs)', borderLeft: '2px solid var(--border-subtle)', fontStyle: 'italic' }}>
+                                  {record.description}
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </motion.div>
                       ))}
                     </div>
