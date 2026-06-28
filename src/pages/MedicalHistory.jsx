@@ -276,12 +276,18 @@ export default function MedicalHistory() {
       const params = new URLSearchParams();
       if (cardNo) params.append('healthCardNo', cardNo);
       if (uName) params.append('userName', uName);
-      
-      const res = await API.get(`/chc/getPatientMedicalHistory?${params}`);
-      setRecords(res.data);
-      
+
+      // Pathologist only needs lab reports, not prescriptions
+      if (roleName !== 'Pathologist') {
+        const res = await API.get(`/chc/getPatientMedicalHistory?${params}`);
+        setRecords(res.data);
+      } else {
+        // For pathologist, set a minimal records object so patient info card still shows
+        setRecords({ patientEntity: null });
+      }
+
       // Attempt to fetch lab reports if we have a healthCardNo
-      const actualCardNo = cardNo || res.data?.patientEntity?.healthCardNo;
+      const actualCardNo = cardNo;
       if (actualCardNo) {
         try {
           const labRes = await API.get(`/lab/patient/${actualCardNo}/reports`);
@@ -459,7 +465,8 @@ export default function MedicalHistory() {
               </div>
             )}
 
-            {activeTab === 'records' && (
+            {/* Records tab: hidden for Pathologist — they only deal with lab reports */}
+            {activeTab === 'records' && roleName !== 'Pathologist' && (
               <>
                 {/* Medical Records */}
                 {records?.medicalRecordResponseDTOList && (() => {
@@ -586,8 +593,8 @@ export default function MedicalHistory() {
                   ));
                 })()}
 
-                {/* Lab Reports — hidden for Chemist role */}
-                {records && roleName !== 'Chemist' && (
+                {/* Lab Reports — hidden for Chemist, rendered inside tab for others (not Pathologist) */}
+                {records && roleName !== 'Chemist' && roleName !== 'Pathologist' && (
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} style={{ marginTop: '32px' }}>
                     <h3 style={{ fontWeight: 700, marginBottom: '16px', color: '#ec4899' }}>🔬 {t('medicalHistory.labReports')}</h3>
                     {labReports.length === 0 ? (
@@ -656,6 +663,71 @@ export default function MedicalHistory() {
                   </motion.div>
                 )}
               </>
+            )}
+
+            {/* Pathologist view: only their own lab reports, no prescriptions */}
+            {roleName === 'Pathologist' && labReports.length >= 0 && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ marginTop: '8px' }}>
+                <h3 style={{ fontWeight: 700, marginBottom: '16px', color: '#ec4899' }}>🔬 {t('medicalHistory.labReports')}</h3>
+                {labReports.length === 0 ? (
+                  <div className="glass-card" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-tertiary)' }}>
+                    {t('medicalHistory.noReports')}
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+                    {labReports.map((report) => (
+                      <div key={report.id} className="glass-card" style={{ padding: '20px', borderLeft: '3px solid #ec4899', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div>
+                            <h4 style={{ fontWeight: 700, fontSize: '1.1rem', color: '#ec4899', margin: 0 }}>{report.reportName}</h4>
+                            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
+                              <strong>Test:</strong> {report.testName}
+                            </p>
+                          </div>
+                          <span className="badge badge-primary">
+                            {report.uploadDateTime ? new Date(report.uploadDateTime).toLocaleString() : 'N/A'}
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', background: 'var(--bg-tertiary)', padding: '10px', borderRadius: 'var(--radius-sm)' }}>
+                          <div><strong>Uploaded By:</strong> @{report.uploadedBy}</div>
+                          <div><strong>Format:</strong> {report.fileType}</div>
+                        </div>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: '4px 0', lineHeight: 1.4 }}>
+                          <strong>{t('common.findings')}:</strong> {report.findings}
+                        </p>
+                        {report.remarks && (
+                          <p style={{ fontSize: '0.85rem', color: 'var(--text-tertiary)', margin: '4px 0' }}>
+                            <strong>{t('medicalHistory.remark')}:</strong> {report.remarks}
+                          </p>
+                        )}
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                          <button
+                            onClick={() => handleView(report.id, report.fileType, report.reportName)}
+                            className="btn btn-secondary"
+                            style={{ flex: 1, padding: '10px', fontSize: '0.9rem', borderColor: '#ec489930', color: '#ec4899', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                          >
+                            👁️ View
+                          </button>
+                          <button
+                            onClick={() => handleDownload(report.id, report.reportName)}
+                            className="btn btn-primary"
+                            style={{ flex: 1, padding: '10px', fontSize: '0.9rem', background: 'linear-gradient(135deg, #ec4899, #8b5cf6)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                          >
+                            📥 Download
+                          </button>
+                          <button
+                            onClick={() => handleDelete(report.id)}
+                            className="btn"
+                            style={{ padding: '10px 14px', fontSize: '0.9rem', background: '#ef4444', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
             )}
 
             {/* Medical Imaging Tab */}
