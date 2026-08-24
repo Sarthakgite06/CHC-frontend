@@ -156,7 +156,7 @@ export default function Dashboard() {
 
             <div style={{ position: 'relative', minHeight: '320px' }}>
               {roleName !== 'Admin' ? (
-                <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+                <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 5], fov: 45 }}>
                   <ambientLight intensity={0.5} />
                   <pointLight position={[5, 5, 5]} intensity={1} color={config.color} />
                   <pointLight position={[-5, -3, 3]} intensity={0.4} color="#00e6d9" />

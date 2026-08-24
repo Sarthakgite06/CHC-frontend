@@ -45,7 +45,7 @@ export default function Login() {
     <div className="auth-layout">
       {/* 3D Panel */}
       <div className="auth-3d-panel">
-        <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+        <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 8], fov: 50 }}>
           <ambientLight intensity={0.3} />
           <pointLight position={[10, 10, 10]} intensity={1} color="#00e6d9" />
           <pointLight position={[-10, -5, 5]} intensity={0.5} color="#8b5cf6" />

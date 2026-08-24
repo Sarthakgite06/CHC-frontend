@@ -105,7 +105,7 @@ export default function Signup() {
     <div className="auth-layout">
       {/* Left: 3D Scene */}
       <div className="auth-3d-panel" style={{ position: 'relative', background: 'var(--bg-primary)' }}>
-        <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+        <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 6], fov: 50 }}>
           <ambientLight intensity={0.4} /><pointLight position={[5, 5, 5]} intensity={0.8} color="#00e6d9" />
           <DNAHelix /><FloatingParticles count={30} spread={8} color="#8b5cf6" />
           <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
