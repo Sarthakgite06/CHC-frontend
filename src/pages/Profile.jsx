@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import HealthCard3D from '../components/3d/HealthCard3D';
+import CanvasErrorBoundary from '../components/ui/CanvasErrorBoundary';
 
 const roleFeatures = {
   Doctor: [
@@ -109,14 +110,19 @@ export default function Profile() {
 
                 <div style={{ position: 'relative', minHeight: '280px' }}>
                   {roleName !== 'Admin' ? (
-                    <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 5], fov: 45 }}>
-                      <ambientLight intensity={0.5} />
-                      <pointLight position={[5, 5, 5]} intensity={1} color={color} />
-                      <pointLight position={[-5, -3, 3]} intensity={0.4} color="#8b5cf6" />
-                      <HealthCard3D userName={user?.userName || 'USER'} healthCardNo={healthCardId} role={roleName} />
-                      <OrbitControls enableZoom={false} enablePan={false} />
-                      <Environment preset="city" />
-                    </Canvas>
+                    <CanvasErrorBoundary>
+                      <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 5], fov: 45 }}>
+                        <ambientLight intensity={0.7} />
+                        <hemisphereLight skyColor={color} groundColor="#0f172a" intensity={0.6} />
+                        <directionalLight position={[5, 8, 5]} intensity={0.8} color="#ffffff" />
+                        <pointLight position={[5, 5, 5]} intensity={1} color={color} />
+                        <pointLight position={[-5, -3, 3]} intensity={0.5} color="#8b5cf6" />
+                        <Suspense fallback={null}>
+                          <HealthCard3D userName={user?.userName || 'USER'} healthCardNo={healthCardId} role={roleName} />
+                        </Suspense>
+                        <OrbitControls enableZoom={false} enablePan={false} />
+                      </Canvas>
+                    </CanvasErrorBoundary>
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: '12px' }}>
                       <div style={{ fontSize: '4rem', opacity: 0.2 }}>🛡️</div>

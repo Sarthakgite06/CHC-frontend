@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import DNAHelix from '../components/3d/DNAHelix';
 import FloatingParticles from '../components/3d/FloatingParticles';
 import ThemeLangToggle from '../components/layout/ThemeLangToggle';
+import CanvasErrorBoundary from '../components/ui/CanvasErrorBoundary';
 import API from '../api/axios';
 
 const DISTRICTS = [
@@ -105,12 +106,20 @@ export default function Signup() {
     <div className="auth-layout">
       {/* Left: 3D Scene */}
       <div className="auth-3d-panel" style={{ position: 'relative', background: 'var(--bg-primary)' }}>
-        <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 6], fov: 50 }}>
-          <ambientLight intensity={0.4} /><pointLight position={[5, 5, 5]} intensity={0.8} color="#00e6d9" />
-          <DNAHelix /><FloatingParticles count={30} spread={8} color="#8b5cf6" />
-          <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
-          <Environment preset="city" />
-        </Canvas>
+        <CanvasErrorBoundary>
+          <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 6], fov: 50 }}>
+            <ambientLight intensity={0.6} />
+            <hemisphereLight skyColor="#00e6d9" groundColor="#0a0e1a" intensity={0.5} />
+            <directionalLight position={[5, 8, 5]} intensity={0.8} color="#ffffff" />
+            <pointLight position={[5, 5, 5]} intensity={0.8} color="#00e6d9" />
+            <pointLight position={[-5, -3, 3]} intensity={0.5} color="#8b5cf6" />
+            <Suspense fallback={null}>
+              <DNAHelix />
+              <FloatingParticles count={30} spread={8} color="#8b5cf6" />
+            </Suspense>
+            <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
+          </Canvas>
+        </CanvasErrorBoundary>
         <div style={{ position: 'absolute', bottom: '40px', left: '40px', right: '40px' }}>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.8rem', fontWeight: 800 }}>{t('signup.joinNetwork', 'Join CHC Network')}</h2>
           <p style={{ color: 'var(--text-secondary)', marginTop: '8px' }}>{t('signup.digitalIdentity', 'Your digital health identity across India')}</p>

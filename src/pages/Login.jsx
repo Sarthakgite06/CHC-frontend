@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import DNAHelix from '../components/3d/DNAHelix';
 import FloatingParticles from '../components/3d/FloatingParticles';
 import ThemeLangToggle from '../components/layout/ThemeLangToggle';
+import CanvasErrorBoundary from '../components/ui/CanvasErrorBoundary';
 
 export default function Login() {
   const [userName, setUserName] = useState('');
@@ -45,15 +46,20 @@ export default function Login() {
     <div className="auth-layout">
       {/* 3D Panel */}
       <div className="auth-3d-panel">
-        <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 8], fov: 50 }}>
-          <ambientLight intensity={0.3} />
-          <pointLight position={[10, 10, 10]} intensity={1} color="#00e6d9" />
-          <pointLight position={[-10, -5, 5]} intensity={0.5} color="#8b5cf6" />
-          <DNAHelix />
-          <FloatingParticles count={60} spread={12} />
-          <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
-          <Environment preset="night" />
-        </Canvas>
+        <CanvasErrorBoundary>
+          <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 8], fov: 50 }}>
+            <ambientLight intensity={0.6} />
+            <hemisphereLight skyColor="#00e6d9" groundColor="#0a0e1a" intensity={0.5} />
+            <directionalLight position={[10, 10, 5]} intensity={0.8} color="#ffffff" />
+            <pointLight position={[10, 10, 10]} intensity={1} color="#00e6d9" />
+            <pointLight position={[-10, -5, 5]} intensity={0.6} color="#8b5cf6" />
+            <Suspense fallback={null}>
+              <DNAHelix />
+              <FloatingParticles count={60} spread={12} />
+            </Suspense>
+            <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
+          </Canvas>
+        </CanvasErrorBoundary>
 
         {/* Overlay text */}
         <div style={{

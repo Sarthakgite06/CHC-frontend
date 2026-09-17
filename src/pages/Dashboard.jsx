@@ -1,10 +1,12 @@
+import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import HealthCard3D from '../components/3d/HealthCard3D';
 import FloatingParticles from '../components/3d/FloatingParticles';
+import CanvasErrorBoundary from '../components/ui/CanvasErrorBoundary';
 
 
 export default function Dashboard() {
@@ -158,15 +160,20 @@ export default function Dashboard() {
 
         <div style={{ position: 'relative', minHeight: '320px' }}>
           {roleName !== 'Admin' ? (
-            <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 5], fov: 45 }}>
-              <ambientLight intensity={0.5} />
-              <pointLight position={[5, 5, 5]} intensity={1} color={config.color} />
-              <pointLight position={[-5, -3, 3]} intensity={0.4} color="#00e6d9" />
-              <HealthCard3D userName={user?.userName || 'USER'} healthCardNo={healthCardId} role={roleName} />
-              <FloatingParticles count={20} spread={6} color={config.color} />
-              <OrbitControls enableZoom={false} enablePan={false} />
-              <Environment preset="city" />
-            </Canvas>
+            <CanvasErrorBoundary>
+              <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 5], fov: 45 }}>
+                <ambientLight intensity={0.7} />
+                <hemisphereLight skyColor={config.color} groundColor="#0f172a" intensity={0.6} />
+                <directionalLight position={[5, 8, 5]} intensity={0.8} color="#ffffff" />
+                <pointLight position={[5, 5, 5]} intensity={1} color={config.color} />
+                <pointLight position={[-5, -3, 3]} intensity={0.5} color="#00e6d9" />
+                <Suspense fallback={null}>
+                  <HealthCard3D userName={user?.userName || 'USER'} healthCardNo={healthCardId} role={roleName} />
+                  <FloatingParticles count={20} spread={6} color={config.color} />
+                </Suspense>
+                <OrbitControls enableZoom={false} enablePan={false} />
+              </Canvas>
+            </CanvasErrorBoundary>
           ) : (
             /* Admin gets platform branding instead of health card */
             <div style={{
