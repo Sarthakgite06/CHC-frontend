@@ -11,7 +11,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const roleName = user?.role?.replace('ROLE_', '') || 'User';
-  
+
   const roleConfigs = {
     Doctor: {
       greeting: 'Dr.',
@@ -99,7 +99,7 @@ export default function Dashboard() {
       actionTitle: t('dashboard.quickActions') || 'Quick Actions'
     }
   };
-  
+
   // Patient is same as User
   roleConfigs.Patient = roleConfigs.User;
 
@@ -112,100 +112,106 @@ export default function Dashboard() {
   return (
     <>
       {/* Hero Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-            className="grid-layout-2"
-            style={{
-              background: 'var(--gradient-card)', borderRadius: 'var(--radius-xl)',
-              border: `1px solid ${config.color}25`, minHeight: '320px', overflow: 'hidden', marginBottom: '32px'
-            }}
-          >
-            <div style={{ padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-                style={{ color: config.color, fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
-                {t('dashboard.welcomeBack')}
-              </motion.p>
-              <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                style={{ fontFamily: 'var(--font-display)', fontSize: '2.2rem', fontWeight: 800, marginBottom: '12px', lineHeight: 1.2 }}>
-                {config.greeting} {user?.userName || 'User'}
-              </motion.h1>
-              <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-                style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: '360px', lineHeight: 1.6 }}>
-                {config.subtitle}
-              </motion.p>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+        className="grid-layout-2"
+        style={{
+          background: 'var(--gradient-card)', borderRadius: 'var(--radius-xl)',
+          border: `1px solid ${config.color}25`, minHeight: '320px', overflow: 'hidden', marginBottom: '32px'
+        }}
+      >
+        <div style={{ padding: '40px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+            style={{ color: config.color, fontWeight: 600, fontSize: '0.9rem', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
+            {t('dashboard.welcomeBack')}
+          </motion.p>
+          <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: '2.2rem', fontWeight: 800, marginBottom: '12px', lineHeight: 1.2 }}>
+            {config.greeting} {user?.userName || 'User'}
+          </motion.h1>
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+            style={{ color: 'var(--text-secondary)', fontSize: '1rem', maxWidth: '360px', lineHeight: 1.6 }}>
+            {config.subtitle}
+          </motion.p>
 
-              {/* Health Card ID — only for actual users, NOT admin */}
-              {roleName !== 'Admin' && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-                  style={{ marginTop: '16px', padding: '12px 18px', background: `${config.color}10`,
-                    border: `1px solid ${config.color}30`, borderRadius: 'var(--radius-md)',
-                    display: 'inline-flex', alignItems: 'center', gap: '10px', width: 'fit-content' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{t('dashboard.healthCardId')}</span>
-                  <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '1.1rem', color: config.color, letterSpacing: '0.05em' }}>{healthCardId}</span>
-                </motion.div>
-              )}
+          {/* Health Card ID — only for actual users, NOT admin */}
+          {roleName !== 'Admin' && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+              style={{
+                marginTop: '16px', padding: '12px 18px', background: `${config.color}10`,
+                border: `1px solid ${config.color}30`, borderRadius: 'var(--radius-md)',
+                display: 'inline-flex', alignItems: 'center', gap: '10px', width: 'fit-content'
+              }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{t('dashboard.healthCardId')}</span>
+              <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '1.1rem', color: config.color, letterSpacing: '0.05em' }}>{healthCardId}</span>
+            </motion.div>
+          )}
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-                style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
-                <span className="badge" style={{ background: `${config.color}20`, color: config.color }}>
-                  {roleName === 'Admin' ? `🛡️ ${t('dashboard.monitoringPlatform')}` : (t(`roles.${roleName.toLowerCase()}`) || roleName)}
-                </span>
-                <span className="badge badge-success">{t('dashboard.online')}</span>
-              </motion.div>
-            </div>
-
-            <div style={{ position: 'relative', minHeight: '320px' }}>
-              {roleName !== 'Admin' ? (
-                <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 5], fov: 45 }}>
-                  <ambientLight intensity={0.5} />
-                  <pointLight position={[5, 5, 5]} intensity={1} color={config.color} />
-                  <pointLight position={[-5, -3, 3]} intensity={0.4} color="#00e6d9" />
-                  <HealthCard3D userName={user?.userName || 'USER'} healthCardNo={healthCardId} role={roleName} />
-                  <FloatingParticles count={20} spread={6} color={config.color} />
-                  <OrbitControls enableZoom={false} enablePan={false} />
-                  <Environment preset="city" />
-                </Canvas>
-              ) : (
-                /* Admin gets platform branding instead of health card */
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%',
-                  flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ fontSize: '4rem', opacity: 0.2 }}>🛡️</div>
-                  <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>CHC {t('dashboard.monitoringPlatform')}</p>
-                </div>
-              )}
-            </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
+            style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
+            <span className="badge" style={{ background: `${config.color}20`, color: config.color }}>
+              {roleName === 'Admin' ? `🛡️ ${t('dashboard.monitoringPlatform')}` : (t(`roles.${roleName.toLowerCase()}`) || roleName)}
+            </span>
+            <span className="badge badge-success">{t('dashboard.online')}</span>
           </motion.div>
+        </div>
 
-          {/* Stats Grid */}
-          <motion.div className="stats-grid" variants={containerVariants} initial="hidden" animate="visible">
-            {config.stats.map((stat, i) => (
-              <motion.div key={i} className="glass-card stat-card" variants={itemVariants}
-                whileHover={{ scale: 1.02, y: -4 }} transition={{ type: 'spring', stiffness: 300 }}>
-                <div className="stat-icon" style={{ background: `${stat.color}15`, color: stat.color }}>{stat.icon}</div>
-                <div className="stat-info"><h3>{stat.value}</h3><p>{stat.label}</p></div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Quick Actions */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-            className="glass-card" style={{ padding: '32px' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, marginBottom: '20px' }}>
-              {config.actionTitle}
-            </h2>
-            <div className="grid-responsive">
-              {config.actions.map((action, i) => (
-                <motion.a key={i} href={action.link} whileHover={{ scale: 1.03, y: -2 }}
-                  style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '20px',
-                    borderRadius: 'var(--radius-md)', background: 'var(--bg-tertiary)',
-                    border: '1px solid var(--border-subtle)', cursor: 'pointer', transition: 'all 0.2s', textDecoration: 'none', color: 'inherit' }}>
-                  <span style={{ fontSize: '1.6rem' }}>{action.icon}</span>
-                  <h4 style={{ fontSize: '0.95rem', fontWeight: 600 }}>{action.label}</h4>
-                  <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>{action.desc}</p>
-                </motion.a>
-              ))}
+        <div style={{ position: 'relative', minHeight: '320px' }}>
+          {roleName !== 'Admin' ? (
+            <Canvas dpr={[1, 1.5]} gl={{ powerPreference: 'high-performance', antialias: true }} camera={{ position: [0, 0, 5], fov: 45 }}>
+              <ambientLight intensity={0.5} />
+              <pointLight position={[5, 5, 5]} intensity={1} color={config.color} />
+              <pointLight position={[-5, -3, 3]} intensity={0.4} color="#00e6d9" />
+              <HealthCard3D userName={user?.userName || 'USER'} healthCardNo={healthCardId} role={roleName} />
+              <FloatingParticles count={20} spread={6} color={config.color} />
+              <OrbitControls enableZoom={false} enablePan={false} />
+              <Environment preset="city" />
+            </Canvas>
+          ) : (
+            /* Admin gets platform branding instead of health card */
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%',
+              flexDirection: 'column', gap: '12px'
+            }}>
+              <div style={{ fontSize: '4rem', opacity: 0.2 }}>🛡️</div>
+              <p style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>CHC {t('dashboard.monitoringPlatform')}</p>
             </div>
+          )}
+        </div>
+      </motion.div>
+
+      {/* Stats Grid */}
+      <motion.div className="stats-grid" variants={containerVariants} initial="hidden" animate="visible">
+        {config.stats.map((stat, i) => (
+          <motion.div key={i} className="glass-card stat-card" variants={itemVariants}
+            whileHover={{ scale: 1.02, y: -4 }} transition={{ type: 'spring', stiffness: 300 }}>
+            <div className="stat-icon" style={{ background: `${stat.color}15`, color: stat.color }}>{stat.icon}</div>
+            <div className="stat-info"><h3>{stat.value}</h3><p>{stat.label}</p></div>
           </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Quick Actions */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
+        className="glass-card" style={{ padding: '32px' }}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.3rem', fontWeight: 700, marginBottom: '20px' }}>
+          {config.actionTitle}
+        </h2>
+        <div className="grid-responsive">
+          {config.actions.map((action, i) => (
+            <motion.a key={i} href={action.link} whileHover={{ scale: 1.03, y: -2 }}
+              style={{
+                display: 'flex', flexDirection: 'column', gap: '8px', padding: '20px',
+                borderRadius: 'var(--radius-md)', background: 'var(--bg-tertiary)',
+                border: '1px solid var(--border-subtle)', cursor: 'pointer', transition: 'all 0.2s', textDecoration: 'none', color: 'inherit'
+              }}>
+              <span style={{ fontSize: '1.6rem' }}>{action.icon}</span>
+              <h4 style={{ fontSize: '0.95rem', fontWeight: 600 }}>{action.label}</h4>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>{action.desc}</p>
+            </motion.a>
+          ))}
+        </div>
+      </motion.div>
     </>
   );
 }
